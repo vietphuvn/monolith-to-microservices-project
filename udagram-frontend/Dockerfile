@@ -5,10 +5,10 @@ WORKDIR /usr/src/app
 ## Install app dependencies
 ## A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 ## Bundle app source
 COPY . .
-RUN ionic build
+RUN NODE_OPTIONS=--openssl-legacy-provider ionic build
 ### Run 
 FROM nginx:alpine
 #COPY www /usr/share/nginx/html
