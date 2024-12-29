@@ -1,4 +1,4 @@
-name: CI FE
+name: CI ReverseProxy
 
 on:
   push:
