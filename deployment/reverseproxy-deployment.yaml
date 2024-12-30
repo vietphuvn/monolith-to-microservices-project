@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reverseproxy-deployment
+  labels:
+    app: p3-reverseproxy
+spec:
+  replicas: 1 # Number of pod replicas
+  selector:
+    matchLabels:
+      app: p3-reverseproxy
+  template:
+    metadata:
+      labels:
+        app: p3-reverseproxy
+    spec:
+      containers:
+        - name: p3-reverseproxy
+          image: vietphuvn/reverseproxy:v2
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: p3-reverseproxy
+spec:
+  selector:
+    app: p3-reverseproxy
+  ports:
+    - protocol: TCP
+      port: 8080 # External port
+  type: LoadBalancer # To exposes the service externally

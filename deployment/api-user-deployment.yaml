@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-user-deployment
+  labels:
+    app: p3-api-user
+spec:
+  replicas: 1 # Number of pod replicas
+  selector:
+    matchLabels:
+      app: p3-api-user
+  template:
+    metadata:
+      labels:
+        app: p3-api-user
+    spec:
+      containers:
+        - name: p3-api-user
+          image: vietphuvn/udagram-api-user:v1
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "2048Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8080
+          env:
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: p3-app-config
+                key: POSTGRES_HOST
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: p3-app-config
+                key: POSTGRES_DB
+          - name: POSTGRES_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: p3-app-env-secret
+                key: POSTGRES_USERNAME
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: p3-app-env-secret
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: p3-app-config
+                key: POSTGRES_PORT
+          - name: JWT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: p3-app-config
+                key: JWT_SECRET
+          - name: AWS_BUCKET
+            valueFrom:
+              configMapKeyRef:
+                name: p3-app-config
+                key: AWS_BUCKET
+          - name: AWS_REGION
+            valueFrom:
+              configMapKeyRef:
+                name: p3-app-config
+                key: AWS_REGION
+          - name: AWS_PROFILE
+            valueFrom:
+              configMapKeyRef:
+                name: p3-app-config
+                key: AWS_PROFILE
+          volumeMounts:
+          - name: aws-p3-app-secret
+            mountPath: "/root/.aws/"
+            readOnly: true
+      volumes:
+      - name: aws-p3-app-secret
+        secret:
+          secretName: aws-p3-app-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: p3-api-user
+spec:
+  selector:
+    app: p3-api-user
+  ports:
+    - protocol: TCP
+      port: 8080 # External port
