@@ -8,7 +8,7 @@ export const sequelize = new Sequelize({
   'database': config.database,
   'host': config.host,
 
-  'dialect': 'postgres',
+  'dialect': config.dialect,
   'storage': ':memory:',
   'dialectOptions': {
       ssl: {
